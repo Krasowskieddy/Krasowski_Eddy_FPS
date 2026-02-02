@@ -1,0 +1,33 @@
+fileFormatVersion: 2
+guid: 7cfdbd9104e186642943082e0cd11378
+labels:
+- Weapon
+AssetOrigin:
+  serializedVersion: 1
+  productId: 19365
+  packageName: Easy Weapons
+  packageVersion: 3.2.0
+  assetPath: Assets/Easy Weapons/Scripts/Weapon.cs
+  uploadId: 119210
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - weaponModel: {instanceID: 0}
+  - raycastStartSpot: {instanceID: 0}
+  - projectile: {instanceID: 0}
+  - projectileSpawnSpot: {instanceID: 0}
+  - reflectionMaterial: {instanceID: 0}
+  - beamMaterial: {instanceID: 0}
+  - shell: {instanceID: 0}
+  - shellSpitPosition: {instanceID: 0}
+  - muzzleEffectsPosition: {instanceID: 0}
+  - crosshairTexture: {instanceID: 0}
+  - fireSound: {instanceID: 0}
+  - reloadSound: {instanceID: 0}
+  - dryFireSound: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
