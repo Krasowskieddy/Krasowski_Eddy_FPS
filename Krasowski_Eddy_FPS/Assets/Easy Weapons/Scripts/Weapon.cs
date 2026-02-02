@@ -69,10 +69,11 @@ public class SmartBulletHoleGroup
 public class Weapon : MonoBehaviour
 {
 	// Weapon Type
-	public WeaponType type = WeaponType.Projectile;		// Which weapon system should be used
-	
+	public WeaponType type = WeaponType.Projectile;     // Which weapon system should be used
+
 	// External Tools
-	public bool shooterAIEnabled = false;				// Enable features compatible with Shooter AI by Gateway Games
+	public bool isShoot;
+    public bool shooterAIEnabled = false;				// Enable features compatible with Shooter AI by Gateway Games
 	public bool bloodyMessEnabled = false;				// Enable features compatible with Bloody Mess by Heavy Diesel Softworks
 	public int weaponType = 0;							// Bloody mess property
 
@@ -570,9 +571,17 @@ public class Weapon : MonoBehaviour
 
 		// Increment the burst counter
 		burstCounter++;
+        //raycast test
+        RaycastHit hit;
+        Debug.DrawRay(transform.position, transform.forward * 100);
+        if (Physics.Raycast(transform.position, transform.forward, out hit, 100))
+        {
+            Debug.Log("le raycast touche un object !");
+            isShoot = true;
+        }
 
-		// If this is a semi-automatic weapon, set canFire to false (this means the weapon can't fire again until the player lets up on the fire button)
-		if (auto == Auto.Semi)
+        // If this is a semi-automatic weapon, set canFire to false (this means the weapon can't fire again until the player lets up on the fire button)
+        if (auto == Auto.Semi)
 			canFire = false;
 
 		// First make sure there is ammo
@@ -602,9 +611,9 @@ public class Weapon : MonoBehaviour
 
 			// The ray that will be used for this shot
 			Ray ray = new Ray(raycastStartSpot.position, direction);
-			RaycastHit hit;
+			RaycastHit shoot;
 
-			if (Physics.Raycast(ray, out hit, range))
+			if (Physics.Raycast(ray, out shoot, range))
 			{
 				// Warmup heat
 				float damage = power;
@@ -615,19 +624,19 @@ public class Weapon : MonoBehaviour
 				}
 				
 				// Damage
-				hit.collider.gameObject.SendMessageUpwards("ChangeHealth", -damage, SendMessageOptions.DontRequireReceiver);
+				shoot.collider.gameObject.SendMessageUpwards("ChangeHealth", -damage, SendMessageOptions.DontRequireReceiver);
 				
 				if (shooterAIEnabled)
 				{
-					hit.transform.SendMessageUpwards("Damage", damage / 100, SendMessageOptions.DontRequireReceiver);
+					shoot.transform.SendMessageUpwards("Damage", damage / 100, SendMessageOptions.DontRequireReceiver);
 				}
 
 				if (bloodyMessEnabled)
 				{
 					//call the ApplyDamage() function on the enenmy CharacterSetup script
-					if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Limb"))
+					if (shoot.collider.gameObject.layer == LayerMask.NameToLayer("Limb"))
 					{
-						Vector3 directionShot = hit.collider.transform.position - transform.position;
+						Vector3 directionShot = shoot.collider.transform.position - transform.position;
 
 						//  Un-comment the following section for Bloody Mess compatibility
 						/*
@@ -651,7 +660,7 @@ public class Weapon : MonoBehaviour
 				{
 					foreach (SmartBulletHoleGroup bhg in bulletHoleExceptions)
 					{
-						if (hit.collider.gameObject.tag == bhg.tag)
+						if (shoot.collider.gameObject.tag == bhg.tag)
 						{
 							exception = true;
 							break;
@@ -662,7 +671,7 @@ public class Weapon : MonoBehaviour
 				{
 					foreach (SmartBulletHoleGroup bhg in bulletHoleExceptions)
 					{
-						MeshRenderer mesh = FindMeshRenderer(hit.collider.gameObject);
+						MeshRenderer mesh = FindMeshRenderer(shoot.collider.gameObject);
 						if (mesh != null)
 						{
 							if (mesh.sharedMaterial == bhg.material)
@@ -677,7 +686,7 @@ public class Weapon : MonoBehaviour
 				{
 					foreach (SmartBulletHoleGroup bhg in bulletHoleExceptions)
 					{
-						if (hit.collider.sharedMaterial == bhg.physicMaterial)
+						if (shoot.collider.sharedMaterial == bhg.physicMaterial)
 						{
 							exception = true;
 							break;
@@ -696,7 +705,7 @@ public class Weapon : MonoBehaviour
 					{
                         foreach (SmartBulletHoleGroup bhg in bulletHoleGroups)
                         {
-                            if (hit.collider.gameObject.tag == bhg.tag)
+                            if (shoot.collider.gameObject.tag == bhg.tag)
 							{
 								holes.Add(bhg);
 							}
@@ -707,7 +716,7 @@ public class Weapon : MonoBehaviour
 					else if (bhSystem == BulletHoleSystem.Material)
 					{
                         // Get the mesh that was hit, if any
-                        MeshRenderer mesh = FindMeshRenderer(hit.collider.gameObject);
+                        MeshRenderer mesh = FindMeshRenderer(shoot.collider.gameObject);
 
                         foreach (SmartBulletHoleGroup bhg in bulletHoleGroups)
                         {
@@ -726,7 +735,7 @@ public class Weapon : MonoBehaviour
 					{
                         foreach (SmartBulletHoleGroup bhg in bulletHoleGroups)
                         {
-                            if (hit.collider.sharedMaterial == bhg.physicMaterial)
+                            if (shoot.collider.sharedMaterial == bhg.physicMaterial)
                             {
                                 holes.Add(bhg);
                             }
@@ -758,7 +767,7 @@ public class Weapon : MonoBehaviour
 
 					// Place the bullet hole in the scene
 					if (sbhg.bulletHole != null)
-						sbhg.bulletHole.PlaceBulletHole(hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+						sbhg.bulletHole.PlaceBulletHole(shoot.point, Quaternion.FromToRotation(Vector3.up, shoot.normal));
 				}
 				
 				// Hit Effects
@@ -767,14 +776,14 @@ public class Weapon : MonoBehaviour
 					foreach (GameObject hitEffect in hitEffects)
 					{
 						if (hitEffect != null)
-                            Instantiate(hitEffect, hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
+                            Instantiate(hitEffect, shoot.point, Quaternion.FromToRotation(Vector3.up, shoot.normal));
 					}
 				}
 
 				// Add force to the object that was hit
-				if (hit.rigidbody)
+				if (shoot.rigidbody)
 				{
-					hit.rigidbody.AddForce(ray.direction * power * forceMultiplier);
+					shoot.rigidbody.AddForce(ray.direction * power * forceMultiplier);
 				}
 			}
 		}
