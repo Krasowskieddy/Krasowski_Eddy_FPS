@@ -24,7 +24,7 @@ public class weapon : MonoBehaviour
 
                 if (hit.transform.gameObject.name == "target")
                 {
-                    hit.transform.GetComponent<OpenDoor>().bOpen = true;
+                    GetComponent<OpenDoor>().bOpen = true;
                 }
             }
         }
