@@ -1,15 +1,16 @@
+using System.Xml.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class weapon : MonoBehaviour
 {
+    public GameObject door;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Awake()
     {
-        
+        door.GetComponent<Transform>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetMouseButton(0))
@@ -19,10 +20,11 @@ public class weapon : MonoBehaviour
 
             if (Physics.Raycast(transform.position, transform.forward, out hit, 100))
             {
-                Debug.Log("objet touché");
-                if (hit.transform.gameObject.name=("target box"))
-                {
+                Debug.Log("test");
 
+                if (hit.transform.gameObject.name == "target")
+                {
+                    hit.transform.GetComponent<OpenDoor>().bOpen = true;
                 }
             }
         }
